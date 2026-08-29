@@ -3,7 +3,7 @@ variable "sg_names" {
 }
 
 variable "project" {
-    default = "roboshop"
+    default = "todo"
 }
 
 variable "environment" {
