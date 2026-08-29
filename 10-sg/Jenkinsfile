@@ -86,43 +86,48 @@ pipeline {
             }
         }
 
-        // stage('trigger parallel jobs') {
-        //     parallel {
-        //         stage('sg-rules') {
-        //             steps {
-        //                 script {
-        //                 build job: '20-sg-rules',
-        //                 wait: false,
-        //                 propagate: false                  
-        //                 }
-        //             }
+         stage('trigger parallel jobs') {
+            when {
+                expression {
+                    params.ACTION == 'apply'
+                }
+            }
+            parallel {
+                stage('sg-rules') {
+                    steps {
+                        script {
+                        build job: '20-sg-rules',
+                        wait: false,
+                        propagate: false                  
+                        }
+                    }
 
-        //         }
+                }
 
-        //         stage('bastion') {
-        //            steps {
-        //                 script {
-        //                 build job: '30-bastion',
-        //                 wait: false,
-        //                 propagate: false                  
-        //                 }
-        //            }
+                stage('bastion') {
+                   steps {
+                        script {
+                        build job: '30-bastion',
+                        wait: false,
+                        propagate: false                  
+                        }
+                   }
 
-        //         }
+                }
 
-        //         stage('eks') {
-        //             steps {
-        //                 script {
-        //                 build job: '90-eks',
-        //                 wait: false,
-        //                 propagate: false                  
-        //                 }
-        //             }
+                stage('eks') {
+                    steps {
+                        script {
+                        build job: '90-eks',
+                        wait: false,
+                        propagate: false                  
+                        }
+                    }
 
-        //         }
-        //     }
+                }
+            }
            
-        // }
+       }
     }
 
     post{

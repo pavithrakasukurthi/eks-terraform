@@ -87,15 +87,20 @@ pipeline {
             }
         }
 
-        // stage('Trigger SG') {
-        //     steps {
-        //         script {
-        //             build job: '10-sg',
-        //                 wait: false,
-        //                 propagate: false 
-        //         }
-        //     }
-        // }
+        stage('Trigger SG') {
+            when {
+                expression {
+                    params.ACTION == 'apply'
+                }
+            }
+            steps {
+                script {
+                    build job: '10-sg',
+                        wait: false,
+                        propagate: false 
+                }
+            }
+        }
     }
 
     post{
