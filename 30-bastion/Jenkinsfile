@@ -10,6 +10,14 @@ pipeline {
         disableConcurrentBuilds()
     }
 
+     parameters {
+        choice(
+            name: 'ACTION',
+            choices: ['apply', 'destroy'],
+            description: 'Select whether to apply or destroy the infrastructure'
+        )
+    }
+
     stages {
         stage('Init') {
             steps {
@@ -25,6 +33,11 @@ pipeline {
         }
 
         stage('Plan') {
+            when {
+                expression {
+                    params.ACTION == 'apply'
+                }
+            }
             steps {
                 script {
                 withAWS(region:'us-east-1', credentials:'aws-creds') {
@@ -38,6 +51,11 @@ pipeline {
         }
 
         stage('Apply') {
+            when {
+                expression {
+                    params.ACTION == 'apply'
+                }
+            }
             steps {
                script {
                 withAWS(region:'us-east-1', credentials:'aws-creds') {
@@ -51,6 +69,11 @@ pipeline {
         }
 
         stage('Destroy') {
+            when {
+                expression {
+                    params.ACTION == 'destroy'
+                }
+            }
             steps {
                script {
                 withAWS(region:'us-east-1', credentials:'aws-creds') {

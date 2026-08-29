@@ -10,6 +10,14 @@ pipeline {
         disableConcurrentBuilds()
     }
 
+    parameters {
+        choice(
+            name: 'ACTION',
+            choices: ['apply', 'destoy'],
+            description: 'Select whether to apply or destroy the infra'
+        )
+    }
+
     stages {
         stage('Init') {
             steps {
@@ -25,6 +33,11 @@ pipeline {
         }
 
         stage('Plan') {
+            when {
+                expression {
+                    params.ACTION == 'apply'
+                }
+            }
             steps {
                 script {
                 withAWS(region:'us-east-1', credentials:'aws-creds') {
@@ -38,6 +51,11 @@ pipeline {
         }
 
         stage('Apply') {
+            when {
+                expression {
+                    params.ACTION == 'apply'
+                }
+            }
             steps {
                script {
                 withAWS(region:'us-east-1', credentials:'aws-creds') {
@@ -50,18 +68,23 @@ pipeline {
             }
         }
 
-        // stage('Destroy') {
-        //     steps {
-        //        script {
-        //         withAWS(region:'us-east-1', credentials:'aws-creds') {
-        //              sh """
-        //              cd 10-sg
-        //              terraform destroy -auto-approve
-        //              """
-        //         }
-        //        }
-        //     }
-        // }
+        stage('Destroy') {
+            when {
+                expression {
+                    params.ACTION == 'destory'
+                }
+            }
+            steps {
+               script {
+                withAWS(region:'us-east-1', credentials:'aws-creds') {
+                     sh """
+                     cd 10-sg
+                     terraform destroy -auto-approve
+                     """
+                }
+               }
+            }
+        }
 
         stage('trigger parallel jobs') {
             parallel {

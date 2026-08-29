@@ -10,6 +10,14 @@ pipeline {
         disableConcurrentBuilds()
     }
 
+     parameters {
+        choice(
+            name: 'ACTION',
+            choices: ['apply', 'destroy'],
+            description: 'Select whether to apply or destroy the infrastructure'
+        )
+    }
+
     stages {
         stage('Init') {
             steps {
@@ -25,6 +33,12 @@ pipeline {
         }
 
         stage('Plan') {
+            when {
+                expression {
+                    params.action == 'apply'
+                }
+            }
+
             steps {
                 script {
                 withAWS(region:'us-east-1', credentials:'aws-creds') {
@@ -38,6 +52,11 @@ pipeline {
         }
 
         stage('Apply') {
+            when {
+                expression {
+                    params.action == 'apply'
+                }
+            }
             steps {
                script {
                 withAWS(region:'us-east-1', credentials:'aws-creds') {
@@ -50,18 +69,23 @@ pipeline {
             }
         }
 
-        //  stage('Destroy') {
-        //     steps {
-        //        script {
-        //         withAWS(region:'us-east-1', credentials:'aws-creds') {
-        //              sh """
-        //              cd 00-vpc
-        //              terraform destroy -auto-approve
-        //              """
-        //         }
-        //        }
-        //     }
-        // }
+         stage('Destroy') {
+            when {
+                expression {
+                    params.action == 'destroy'
+                }
+            }
+            steps {
+               script {
+                withAWS(region:'us-east-1', credentials:'aws-creds') {
+                     sh """
+                     cd 00-vpc
+                     terraform destroy -auto-approve
+                     """
+                }
+               }
+            }
+        }
 
         stage('Trigger SG') {
             steps {
