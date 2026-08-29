@@ -50,6 +50,19 @@ pipeline {
             }
         }
 
+        stage('Destroy') {
+            steps {
+               script {
+                withAWS(region:'us-east-1', credentials:'aws-creds') {
+                     sh """
+                     cd 10-sg
+                     terraform destroy -auto-approve
+                     """
+                }
+               }
+            }
+        }
+
         stage('trigger parallel jobs') {
             parallel {
                 stage('sg-rules') {
