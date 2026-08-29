@@ -44,5 +44,5 @@ resource "aws_security_group_rule" "eks_node_vpc" {
     cidr_blocks = ["10.0.0.0/16"]
     from_port = 0
     protocol = "-1"
-    to_port = -
+    to_port = 0
 }
