@@ -1,5 +1,5 @@
 variable "sg_names" {
-    default = ["eks_node_sg_id", "eks_control_plane_sg_id", "bastion_sg_id"]
+    default = ["eks_node", "eks_control_plane", "bastion"]
 }
 
 variable "project" {
