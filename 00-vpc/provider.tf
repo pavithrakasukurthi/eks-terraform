@@ -8,7 +8,7 @@ terraform {
 
     backend "s3" {
         bucket = "pavi-module-demo"
-        key = "eks-state-file"
+        key = "vpc-state-file"
         region = "us-east-1"
         use_lockfile = true
         encrypt = true
