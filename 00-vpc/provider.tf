@@ -1,0 +1,20 @@
+terraform {
+    required_provider {
+        aws = {
+            source = "hashicorp/aws"
+            version = "6.16.0"
+        }
+    }
+
+    backend "s3" {
+        bucket = "pavi-module-demo"
+        key = "eks-state-file"
+        region = "us-east-1"
+        use_lockfile = true
+        encrypt = true
+    }
+}
+
+provider "aws" {
+    region = "us-east-1"
+}

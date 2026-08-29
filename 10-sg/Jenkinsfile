@@ -1,0 +1,107 @@
+pipeline {
+    agent {
+        node {
+            label: 'LINUX1'
+        }
+    }
+
+     options {
+        timeout(time: 60, unit: 'MINUTES')
+        disableConcurrentBuilds()
+    }
+
+    stages {
+        stage('Init') {
+            steps {
+               script {
+                withAWS(region:'us-east-1', credentials:'aws-creds') {
+                     sh """
+                     cd 10-sg
+                     terraform init
+                     """
+                }
+               }
+            }
+        }
+
+        stage('Plan') {
+            steps {
+                script {
+                withAWS(region:'us-east-1', credentials:'aws-creds') {
+                     sh """
+                     cd 10-sg
+                     terraform plan
+                     """
+                }
+               }
+            }
+        }
+
+        stage('Apply') {
+            steps {
+               script {
+                withAWS(region:'us-east-1', credentials:'aws-creds') {
+                     sh """
+                     cd 10-sg
+                     terraform apply -auto-approve
+                     """
+                }
+               }
+            }
+        }
+
+        stage('trigger parallel jobs') {
+            parallel {
+                stage('sg-rules') {
+                    steps {
+                        script {
+                        build job: '20-sg-rules',
+                        wait: false,
+                        propagate: false                  
+                        }
+                    }
+
+                }
+
+                stage('bastion') {
+                   steps {
+                        script {
+                        build job: '30-bastion',
+                        wait: false,
+                        propagate: false                  
+                        }
+                   }
+
+                }
+
+                stage('eks') {
+                    steps {
+                        script {
+                        build job: '90-eks',
+                        wait: false,
+                        propagate: false                  
+                        }
+                    }
+
+                }
+            }
+           
+        }
+    }
+
+    post{
+        always{
+            echo 'I will always say Hello again!'
+            cleanWs()
+        }
+        success {
+            echo 'I will run if success'
+        }
+        failure {
+            echo 'I will run if failure'
+        }
+        aborted {
+            echo 'pipeline is aborted'
+        }
+    }
+}
