@@ -114,17 +114,6 @@ pipeline {
                    }
 
                 }
-
-                stage('eks') {
-                    steps {
-                        script {
-                        build job: '90-eks',
-                        wait: false,
-                        propagate: false                  
-                        }
-                    }
-
-                }
             }
            
        }

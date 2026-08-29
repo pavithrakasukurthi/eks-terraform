@@ -85,6 +85,21 @@ pipeline {
                }
             }
         }
+
+        stage('Trigger eks') {
+            when {
+                expression {
+                    params.ACTION == 'apply'
+                }
+            }
+            steps {
+                script {
+                    build job: '90-eks',
+                        wait: false,
+                        propagate: false 
+                }
+            }
+        }
     }
 
     post{
