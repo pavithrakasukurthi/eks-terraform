@@ -50,18 +50,18 @@ pipeline {
             }
         }
 
-         stage('Destroy') {
-            steps {
-               script {
-                withAWS(region:'us-east-1', credentials:'aws-creds') {
-                     sh """
-                     cd 00-vpc
-                     terraform destroy -auto-approve
-                     """
-                }
-               }
-            }
-        }
+        //  stage('Destroy') {
+        //     steps {
+        //        script {
+        //         withAWS(region:'us-east-1', credentials:'aws-creds') {
+        //              sh """
+        //              cd 00-vpc
+        //              terraform destroy -auto-approve
+        //              """
+        //         }
+        //        }
+        //     }
+        // }
 
         stage('Trigger SG') {
             steps {
