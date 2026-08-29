@@ -13,8 +13,8 @@ pipeline {
     parameters {
         choice(
             name: 'ACTION',
-            choices: ['apply, 'destroy],
-            description: 'Choose whether to apply or destroy the infra'
+            choices: ['apply', 'destroy'],
+            description: 'Select whether to apply or destroy the infra'
         )
     }
 
