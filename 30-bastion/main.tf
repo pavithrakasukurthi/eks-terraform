@@ -20,6 +20,7 @@ resource "aws_instance" "bastion" {
 }
 
 resource "terraform_data" "bastion" {
+    depends_on = aws_route53_record.bastion 
     connection {
         type = "ssh"
         host = "bastion.pavithra.sbs"
